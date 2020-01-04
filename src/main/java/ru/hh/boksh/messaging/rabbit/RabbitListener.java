@@ -15,7 +15,7 @@ import ru.hh.boksh.messaging.http.SendMessage;
 public class RabbitListener {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SendMessage.class);
-  private ConnectionFactory connectionFactory;
+  private final ConnectionFactory connectionFactory;
 
   public RabbitListener(ConnectionFactory connectionFactory) {
     this.connectionFactory = connectionFactory;

@@ -9,7 +9,7 @@ import java.util.concurrent.TimeoutException;
 
 public class RabbitPublisher {
 
-  private Connection connection;
+  private final Connection connection;
 
   public RabbitPublisher(ConnectionFactory connectionFactory) {
     try {
@@ -33,6 +33,5 @@ public class RabbitPublisher {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-
   }
 }
