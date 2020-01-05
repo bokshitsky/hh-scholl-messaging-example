@@ -12,7 +12,8 @@ import org.springframework.context.annotation.Import;
 
 @Configuration
 @Import({
-    KafkaPublisher.class
+    KafkaPublisher.class,
+    KafkaListener.class,
 })
 public class KafkaConfig {
 
