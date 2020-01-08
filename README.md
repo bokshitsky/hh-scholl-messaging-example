@@ -20,7 +20,7 @@ mvn clean package
 mvn spring-boot:run
 ```
 
-пробуем отправить что-то в rabbit и kafka через наше приложение
+Пробуем отправить сообщения в rabbit и kafka через наше приложение
 ```
 ./send_to_rabbit.sh
 ./send_to_kafka.sh
