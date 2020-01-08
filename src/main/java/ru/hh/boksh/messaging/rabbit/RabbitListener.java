@@ -10,11 +10,10 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.hh.boksh.messaging.http.SendMessage;
 
 public class RabbitListener {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(SendMessage.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RabbitListener.class);
   private final ConnectionFactory connectionFactory;
 
   public RabbitListener(ConnectionFactory connectionFactory) {
@@ -33,7 +32,8 @@ public class RabbitListener {
         channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
       };
 
-      channel.basicConsume(queueName, false, deliverCallback, consumerTag -> {});
+      channel.basicConsume(queueName, false, deliverCallback, consumerTag -> {
+      });
     } catch (TimeoutException | IOException e) {
       throw new RuntimeException(e);
     }

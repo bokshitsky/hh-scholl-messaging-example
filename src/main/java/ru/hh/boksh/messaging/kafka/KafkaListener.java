@@ -8,11 +8,10 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.hh.boksh.messaging.http.SendMessage;
 
 public class KafkaListener {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(SendMessage.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(KafkaListener.class);
   private static final Duration POOL_TIMEOUT = Duration.ofSeconds(3);
   private final KafkaConsumerFactory kafkaConsumerFactory;
   private final Executor executor = Executors.newCachedThreadPool();
