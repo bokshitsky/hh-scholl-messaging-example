@@ -28,8 +28,8 @@ public class RabbitPublisher {
           (sequenceNumber, multiple) -> future.complete(null),
           (sequenceNumber, multiple) -> future.completeExceptionally(new RuntimeException(String.format("failed to get ack for %s", sequenceNumber)))
       );
-    channel.basicPublish(exchange, routingKey, null, body);
-    return future;
+      channel.basicPublish(exchange, routingKey, null, body);
+      return future;
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

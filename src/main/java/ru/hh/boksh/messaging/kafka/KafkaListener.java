@@ -34,7 +34,7 @@ public class KafkaListener {
           continue;
         }
         consumedRecords.forEach(record -> {
-          LOGGER.info("got record for consume group {}: {}", consumeGroup, record);
+          LOGGER.info("got record for consumer group {}: {}", consumeGroup, record);
         });
         if (commitOffsetToKafka) {
           kafkaConsumer.commitSync();
