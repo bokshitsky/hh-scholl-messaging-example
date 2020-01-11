@@ -1,6 +1,7 @@
 package ru.hh.boksh.messaging.rabbit;
 
 import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.ConfirmCallback;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import java.io.IOException;
@@ -36,17 +37,18 @@ public class RabbitPublisher {
       }
 
       channel.confirmSelect();
-      channel.addConfirmListener(
-          (sequenceNumber, multiple) -> {
-            closeChannel(channel);
-            futureExecutor.execute(() -> future.complete(null));
-          },
-          (sequenceNumber, multiple) -> {
-            closeChannel(channel);
-            futureExecutor.execute(() ->
-                future.completeExceptionally(new RuntimeException(String.format("failed to get ack for %s", sequenceNumber))));
-          }
-      );
+
+      ConfirmCallback onAckCallback = (sequenceNumber, multiple) -> {
+        closeChannel(channel);
+        futureExecutor.execute(() -> future.complete(null));
+      };
+
+      ConfirmCallback onNackCallback = (sequenceNumber, multiple) -> {
+        closeChannel(channel);
+        futureExecutor.execute(() -> future.completeExceptionally(new RuntimeException(String.format("failed to get ack for %s", sequenceNumber))));
+      };
+
+      channel.addConfirmListener(onAckCallback, onNackCallback);
       channel.basicPublish(exchange, routingKey, null, body);
       return future;
     } catch (IOException e) {
