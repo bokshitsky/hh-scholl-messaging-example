@@ -37,18 +37,16 @@ public class RabbitPublisher {
       }
 
       channel.confirmSelect();
-
       ConfirmCallback onAckCallback = (sequenceNumber, multiple) -> {
         closeChannel(channel);
         futureExecutor.execute(() -> future.complete(null));
       };
-
       ConfirmCallback onNackCallback = (sequenceNumber, multiple) -> {
         closeChannel(channel);
         futureExecutor.execute(() -> future.completeExceptionally(new RuntimeException(String.format("failed to get ack for %s", sequenceNumber))));
       };
-
       channel.addConfirmListener(onAckCallback, onNackCallback);
+
       channel.basicPublish(exchange, routingKey, null, body);
       return future;
     } catch (IOException e) {

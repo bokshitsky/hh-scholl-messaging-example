@@ -19,7 +19,7 @@ public class KafkaListener {
   public KafkaListener(KafkaConsumerFactory kafkaConsumerFactory) {
     this.kafkaConsumerFactory = kafkaConsumerFactory;
     listenToTopic("example_topic", "example_app__group1", true);
-    listenToTopic("example_topic", "example_app__group2", false);
+    listenToTopic("example_topic", "example_app__group2", true);
     listenToTopic("example_topic", "example_app__group3", true);
   }
 
