@@ -49,7 +49,7 @@ public class RabbitPublisher {
 
       channel.basicPublish(exchange, routingKey, null, body);
       return future;
-    } catch (IOException e) {
+    } catch (IOException | RuntimeException e) {
       future.completeExceptionally(e);
       return future;
     }

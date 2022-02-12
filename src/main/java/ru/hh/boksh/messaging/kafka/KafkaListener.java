@@ -23,9 +23,9 @@ public class KafkaListener {
     listenToTopic("example_topic", "example_app__group3", true);
   }
 
-  private void listenToTopic(String topicName, String consumeGroup, boolean commitOffsetToKafka) {
+  private void listenToTopic(String topicName, String consumerGroup, boolean commitOffsetToKafka) {
     executor.execute(() -> {
-      Consumer<String, String> kafkaConsumer = kafkaConsumerFactory.createKafkaConsumer(consumeGroup);
+      Consumer<String, String> kafkaConsumer = kafkaConsumerFactory.createKafkaConsumer(consumerGroup);
       kafkaConsumer.subscribe(List.of(topicName));
       while (!Thread.currentThread().isInterrupted()) {
         ConsumerRecords<String, String> consumedRecords = kafkaConsumer.poll(POOL_TIMEOUT);
@@ -33,7 +33,7 @@ public class KafkaListener {
           continue;
         }
         consumedRecords.forEach(record -> {
-          LOGGER.info("got record for consumer group {}: {}", consumeGroup, record);
+          LOGGER.info("got record for consumer group {}: {}", consumerGroup, record);
         });
         if (commitOffsetToKafka) {
           kafkaConsumer.commitSync();

@@ -1,8 +1,6 @@
 package ru.hh.boksh.messaging.rabbit;
 
 import com.rabbitmq.client.ConnectionFactory;
-import java.io.IOException;
-import java.util.concurrent.TimeoutException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +26,7 @@ public class RabbitConfig {
   private String password;
 
   @Bean
-  ConnectionFactory connectionFactory() throws IOException, TimeoutException {
+  public ConnectionFactory connectionFactory() {
     ConnectionFactory connectionFactory = new ConnectionFactory();
     connectionFactory.setUsername(user);
     connectionFactory.setPassword(password);

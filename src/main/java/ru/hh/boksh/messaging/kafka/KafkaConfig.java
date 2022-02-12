@@ -21,7 +21,7 @@ public class KafkaConfig {
   private String servers;
 
   @Bean
-  Producer<String, String> kafkaProducer() {
+  public Producer<String, String> kafkaProducer() {
     Properties props = new Properties();
     props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, servers);
     props.put(ProducerConfig.CLIENT_ID_CONFIG, "example_app");
@@ -29,7 +29,7 @@ public class KafkaConfig {
   }
 
   @Bean
-  KafkaConsumerFactory kafkaConsumerFactory() {
+  public KafkaConsumerFactory kafkaConsumerFactory() {
     return new KafkaConsumerFactory(servers);
   }
 
