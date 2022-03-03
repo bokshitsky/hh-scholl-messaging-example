@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import javax.annotation.PostConstruct;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.slf4j.Logger;
@@ -18,6 +19,10 @@ public class KafkaListener {
 
   public KafkaListener(KafkaConsumerFactory kafkaConsumerFactory) {
     this.kafkaConsumerFactory = kafkaConsumerFactory;
+  }
+
+  @PostConstruct
+  public void startListen() {
     listenToTopic("example_topic", "example_app__group1", true);
     listenToTopic("example_topic", "example_app__group2", true);
     listenToTopic("example_topic", "example_app__group3", true);
@@ -33,7 +38,7 @@ public class KafkaListener {
           continue;
         }
         consumedRecords.forEach(record -> {
-          LOGGER.info("got record for consumer group {}: {}", consumerGroup, record);
+          LOGGER.info("Kafka: got record for consumer group {}: {}", consumerGroup, record);
         });
         if (commitOffsetToKafka) {
           kafkaConsumer.commitSync();

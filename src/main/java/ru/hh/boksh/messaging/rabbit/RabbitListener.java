@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
+import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +19,11 @@ public class RabbitListener {
 
   public RabbitListener(ConnectionFactory connectionFactory) {
     this.connectionFactory = connectionFactory;
+
+  }
+
+  @PostConstruct
+  public void startListen() {
     Stream.of("queue_1", "queue_2", "queue_3").forEach(this::listenToQueue);
   }
 
@@ -28,7 +34,7 @@ public class RabbitListener {
 
       DeliverCallback deliverCallback = (consumerTag, delivery) -> {
         String message = new String(delivery.getBody(), StandardCharsets.UTF_8);
-        LOGGER.info("got message in queue {}: '{}'", queueName, message);
+        LOGGER.info("Rabbit: got message in queue {}: '{}'", queueName, message);
         channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
       };
 
