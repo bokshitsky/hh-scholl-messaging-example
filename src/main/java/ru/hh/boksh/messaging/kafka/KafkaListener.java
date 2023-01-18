@@ -1,10 +1,10 @@
 package ru.hh.boksh.messaging.kafka;
 
+import jakarta.annotation.PostConstruct;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import javax.annotation.PostConstruct;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.slf4j.Logger;
@@ -37,12 +37,12 @@ public class KafkaListener {
         if (consumedRecords.isEmpty()) {
           continue;
         }
-        consumedRecords.forEach(record -> {
-          LOGGER.info("Kafka: got record for consumer group {}: {}", consumerGroup, record);
-        });
         if (commitOffsetToKafka) {
           kafkaConsumer.commitSync();
         }
+        consumedRecords.forEach(record -> {
+          LOGGER.info("Kafka: got record for consumer group {}: {}", consumerGroup, record);
+        });
       }
     });
 

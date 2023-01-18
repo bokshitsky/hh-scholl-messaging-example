@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
-user=boksh
-password=pass
+user=guest
+password=guest
 host=127.0.0.1
 port=15672
 
