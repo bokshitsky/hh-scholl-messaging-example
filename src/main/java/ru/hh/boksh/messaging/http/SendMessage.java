@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.hh.boksh.messaging.kafka.KafkaPublisher;
+import ru.hh.boksh.messaging.kafka.NaiveKafkaPublisher;
 import ru.hh.boksh.messaging.rabbit.RabbitPublisher;
 import ru.hh.boksh.messaging.utils.Utils;
 
@@ -21,11 +21,11 @@ public class SendMessage {
   private static final Logger LOGGER = LoggerFactory.getLogger(SendMessage.class);
 
   private final RabbitPublisher rabbitPublisher;
-  private final KafkaPublisher kafkaPublisher;
+  private final NaiveKafkaPublisher naiveKafkaPublisher;
 
-  public SendMessage(RabbitPublisher rabbitPublisher, KafkaPublisher kafkaPublisher) {
+  public SendMessage(RabbitPublisher rabbitPublisher, NaiveKafkaPublisher naiveKafkaPublisher) {
     this.rabbitPublisher = rabbitPublisher;
-    this.kafkaPublisher = kafkaPublisher;
+    this.naiveKafkaPublisher = naiveKafkaPublisher;
   }
 
   @RequestMapping(value = "/rabbit/exchange/{exchange}/routing_key/{routingKey}", method = RequestMethod.POST)
@@ -61,7 +61,7 @@ public class SendMessage {
       messageBody = Utils.getNowString();
     }
 
-    CompletableFuture<RecordMetadata> sendFuture = kafkaPublisher.send(topic, key, messageBody, slow);
+    CompletableFuture<RecordMetadata> sendFuture = naiveKafkaPublisher.send(topic, key, messageBody, slow);
     LOGGER.info("send kafka message: topic={}, key={}", topic, key);
 
     sendFuture = sendFuture.thenApply((recordMetadata) -> {

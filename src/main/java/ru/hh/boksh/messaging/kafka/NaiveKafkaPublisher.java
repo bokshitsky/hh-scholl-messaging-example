@@ -6,12 +6,12 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-public class KafkaPublisher {
+public class NaiveKafkaPublisher {
 
   private final Producer<String, String> defaultKafkaProducer;
   private final Producer<String, String> slowKafkaProducer;
 
-  public KafkaPublisher(
+  public NaiveKafkaPublisher(
       @Qualifier("DefaultProducer") Producer<String, String> defaultKafkaProducer,
       @Qualifier("SlowProducer") Producer<String, String> slowKafkaProducer
   ) {
