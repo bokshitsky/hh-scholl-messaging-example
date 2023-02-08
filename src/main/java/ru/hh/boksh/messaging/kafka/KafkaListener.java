@@ -9,6 +9,7 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.hh.boksh.messaging.utils.Utils;
 
 public class KafkaListener {
 
@@ -23,28 +24,53 @@ public class KafkaListener {
 
   @PostConstruct
   public void startListen() {
-    listenToTopic("example_topic", "example_app__group1", true);
-    listenToTopic("example_topic", "example_app__group2", true);
-    listenToTopic("example_topic", "example_app__group3", true);
+    listenToTopic("example_topic2", "example_app__group1", true);
+    listenAndLogTime("example_topic2", "example_app__group2", true);
   }
 
   private void listenToTopic(String topicName, String consumerGroup, boolean commitOffsetToKafka) {
     executor.execute(() -> {
-      Consumer<String, String> kafkaConsumer = kafkaConsumerFactory.createKafkaConsumer(consumerGroup);
-      kafkaConsumer.subscribe(List.of(topicName));
-      while (!Thread.currentThread().isInterrupted()) {
-        ConsumerRecords<String, String> consumedRecords = kafkaConsumer.poll(POOL_TIMEOUT);
-        if (consumedRecords.isEmpty()) {
-          continue;
+      try (Consumer<String, String> kafkaConsumer = kafkaConsumerFactory.createKafkaConsumer(consumerGroup)) {
+        kafkaConsumer.subscribe(List.of(topicName));
+        while (!Thread.currentThread().isInterrupted()) {
+          ConsumerRecords<String, String> consumedRecords = kafkaConsumer.poll(POOL_TIMEOUT);
+          if (consumedRecords.isEmpty()) {
+            continue;
+          }
+          if (commitOffsetToKafka) {
+            kafkaConsumer.commitSync();
+          }
+          consumedRecords.forEach(record -> {
+            LOGGER.info("Kafka: got record for consumer group {}: {}", consumerGroup, record);
+          });
         }
-        if (commitOffsetToKafka) {
-          kafkaConsumer.commitSync();
-        }
-        consumedRecords.forEach(record -> {
-          LOGGER.info("Kafka: got record for consumer group {}: {}", consumerGroup, record);
-        });
       }
     });
+  }
 
+  private void listenAndLogTime(String topicName, String consumerGroup, boolean commitOffsetToKafka) {
+    executor.execute(() -> {
+      try (Consumer<String, String> kafkaConsumer = kafkaConsumerFactory.createKafkaConsumer(consumerGroup)) {
+        kafkaConsumer.subscribe(List.of(topicName));
+        while (!Thread.currentThread().isInterrupted()) {
+          ConsumerRecords<String, String> consumedRecords = kafkaConsumer.poll(POOL_TIMEOUT);
+          if (consumedRecords.isEmpty()) {
+            continue;
+          }
+
+          consumedRecords.forEach(record ->
+              Utils.getLatencyMillis(record.value()).ifPresentOrElse(
+                  (latencyMillis) -> LOGGER.info("Kafka: got record for consumer group {}, latency {}: {}", consumerGroup, latencyMillis, record),
+                  () -> LOGGER.info("Kafka: got record for consumer group {}: {}. Latency can't be calculated", consumerGroup, record)
+              )
+          );
+
+          if (commitOffsetToKafka) {
+            kafkaConsumer.commitSync();
+          }
+        }
+      }
+    });
   }
 }
+

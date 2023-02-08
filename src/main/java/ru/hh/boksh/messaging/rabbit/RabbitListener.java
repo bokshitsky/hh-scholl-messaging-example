@@ -11,6 +11,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.hh.boksh.messaging.utils.Utils;
 
 public class RabbitListener {
 
@@ -34,7 +35,10 @@ public class RabbitListener {
 
       DeliverCallback deliverCallback = (consumerTag, delivery) -> {
         String message = new String(delivery.getBody(), StandardCharsets.UTF_8);
-        LOGGER.info("Rabbit: got message in queue {}: '{}'", queueName, message);
+        Utils.getLatencyMillis(message).ifPresentOrElse(
+            (latencyMillis) -> LOGGER.info("Rabbit: got message in queue {}, latency {}: '{}'", queueName, latencyMillis, message),
+            () -> LOGGER.info("Rabbit: got message in queue {}: '{}'", queueName, message)
+        );
         channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
       };
 
